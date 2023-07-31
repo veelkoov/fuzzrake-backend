@@ -9,6 +9,7 @@ import io.ktor.client.plugins.compression.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import time.UTC
@@ -46,7 +47,7 @@ class FastHttpClient(
         }
     }
 
-    override fun fetch(url: Url): Snapshot {
+    override fun fetch(url: Url, method: HttpMethod, addHeaders: Map<String, String>, payload: String?): Snapshot {
         var contents = ""
         var headers = mapOf<String, List<String>>()
         var httpCode = 0
@@ -57,7 +58,13 @@ class FastHttpClient(
             runBlocking {
                 logger.info("Retrieving: '${url.getUrl()}'")
 
-                val response = client.request(url.getUrl())
+                val response = client.request(url.getUrl()) {
+                    this.method = method
+
+                    addHeaders.forEach { (name, value) -> this.headers.append(name, value) }
+
+                    payload?.let { setBody(it) }
+                }
 
                 logger.info("Got response: '${url.getUrl()}'")
 
@@ -96,6 +103,14 @@ class FastHttpClient(
         )
 
         return Snapshot(contents, metadata)
+    }
+
+    override fun getSingleCookieValue(url: String, cookieName: String): String? = runBlocking {
+        client.cookies(url)
+            .filter { it.name.equals(cookieName, true) }
+            .map { it.value }
+            .singleOrNull()
+            ?.decodeURLPart()
     }
 
     private fun correctHttpCode(url: Url, contents: String, response: HttpResponse): Int {

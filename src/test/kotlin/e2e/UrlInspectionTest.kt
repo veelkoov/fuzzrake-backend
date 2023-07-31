@@ -10,8 +10,8 @@ import io.ktor.utils.io.*
 import org.jetbrains.exposed.dao.entityCache
 import testUtils.disposableDatabase
 import testUtils.disposableDirectory
-import web.UrlInspector
-import web.UrlInspectorOptions
+import tasks.UrlsInspection
+import tasks.UrlsInspectionOptions
 import web.client.FastHttpClient
 import web.snapshots.SnapshotsManager
 import kotlin.test.Test
@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class UrlInspectorTest {
+class UrlInspectionTest {
     @Test
     fun `Inspecting perform proper changes in the DB`() = disposableDatabase { database, transaction ->
         val creator = Creator.new { }
@@ -48,9 +48,9 @@ class UrlInspectorTest {
         disposableDirectory { tempDirPath ->
             val snapshotsManager = SnapshotsManager(tempDirPath.toString(), httpClient)
 
-            val subject = UrlInspector(
+            val subject = UrlsInspection(
                 Configuration("/dev/null", "/dev/null"),
-                UrlInspectorOptions(1),
+                UrlsInspectionOptions(1),
                 database = database,
                 snapshotsManager = snapshotsManager,
             )
