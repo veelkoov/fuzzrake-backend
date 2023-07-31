@@ -31,7 +31,7 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:4.0.1")
     implementation("org.apache.logging.log4j:log4j-api:2.20.0")
     implementation("org.apache.logging.log4j:log4j-core:2.20.0")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.20.0")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.20.0")
 
     // Database
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")

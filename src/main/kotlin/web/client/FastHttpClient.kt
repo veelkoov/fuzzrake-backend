@@ -27,6 +27,7 @@ class FastHttpClient(
             this.sanitizeHeader {
                 it.equals("content-security-policy", true) // SPAM
             }
+            this.level = LogLevel.ALL
         }*/
         install(HttpCookies)
         install(ContentEncoding) {
@@ -34,7 +35,7 @@ class FastHttpClient(
             gzip(0.9F)
         }
         install(UserAgent) {
-            agent = "Mozilla/5.0 (compatible; GetFursuitBot/0.10; Ktor/Apache5; +https://getfursu.it/)"
+            agent = "Mozilla/5.0 (compatible; GetFursuitBot/0.10; Ktor/Java; +https://getfursu.it/)"
         }
         install(HttpTimeout) {
             requestTimeoutMillis = 30_000
