@@ -12,6 +12,7 @@ import testUtils.disposableDatabase
 import testUtils.disposableDirectory
 import tasks.UrlsInspection
 import tasks.UrlsInspectionOptions
+import testUtils.getNullConfiguration
 import web.client.FastHttpClient
 import web.snapshots.SnapshotsManager
 import kotlin.test.Test
@@ -49,7 +50,7 @@ class UrlInspectionTest {
             val snapshotsManager = SnapshotsManager(tempDirPath.toString(), httpClient)
 
             val subject = UrlsInspection(
-                Configuration("/dev/null", "/dev/null"),
+                getNullConfiguration(),
                 UrlsInspectionOptions(1),
                 database = database,
                 snapshotsManager = snapshotsManager,
