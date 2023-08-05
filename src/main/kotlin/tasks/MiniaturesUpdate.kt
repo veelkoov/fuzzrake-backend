@@ -12,7 +12,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.exposed.dao.with
 import tasks.miniaturesUpdate.FurtrackMiniatureUrlResolver
 import tasks.miniaturesUpdate.ScritchMiniatureUrlResolver
-import web.client.HttpClientInterface
 import database.entities.CreatorUrl as CreatorUrlEntity
 
 private val logger = KotlinLogging.logger {}
@@ -20,14 +19,12 @@ private val logger = KotlinLogging.logger {}
 class MiniaturesUpdate(
     private val config: Configuration,
     private val database: Database = Database(config.databasePath),
-    httpClient: HttpClientInterface? = null,
+    private val scritch: ScritchMiniatureUrlResolver = ScritchMiniatureUrlResolver(),
+    private val furtrack: FurtrackMiniatureUrlResolver = FurtrackMiniatureUrlResolver(),
 ) {
-    private val scritch = ScritchMiniatureUrlResolver(httpClient)
-    private val furtrack = FurtrackMiniatureUrlResolver(httpClient)
-
     fun execute() {
         database.transaction {
-            val creators: List<Creator> = getCreatorsWithPhotoUrls()
+            val creators: List<Creator> = getCreatorsWithPhotoOrMiniatureUrls()
 
             creators.forEach(::updatePhotos)
         }
@@ -73,9 +70,14 @@ class MiniaturesUpdate(
         }
     }
 
-    private fun getCreatorsWithPhotoUrls(): List<Creator> {
+    private fun getCreatorsWithPhotoOrMiniatureUrls(): List<Creator> {
         return CreatorUrlEntity
-            .find { CreatorUrls.type eq UrlType.URL_PHOTOS.name}
+            .find {
+                CreatorUrls.type inList listOf(
+                    UrlType.URL_PHOTOS.name,
+                    UrlType.URL_MINIATURES.name,
+                )
+            }
             .with(CreatorUrlEntity::creator)
             .map { it.creator }
             .toSet().toList()

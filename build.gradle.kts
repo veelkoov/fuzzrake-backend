@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.serialization") version "1.8.22"
     application
 
-    id("org.jetbrains.kotlinx.kover") version "0.7.1"
+    id("org.jetbrains.kotlinx.kover") version "0.7.3"
     id("jacoco")
 }
 

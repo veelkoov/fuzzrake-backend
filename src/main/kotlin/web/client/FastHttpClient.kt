@@ -3,10 +3,12 @@ package web.client
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.engine.*
 import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.compression.*
 import io.ktor.client.plugins.cookies.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -23,29 +25,7 @@ private val logger = KotlinLogging.logger {}
 class FastHttpClient(
     client: HttpClient? = null,
 ) : HttpClientInterface {
-    private val client: HttpClient = client ?: HttpClient(Java) {
-        /*install(Logging) {
-            this.sanitizeHeader {
-                it.equals("content-security-policy", true) // SPAM
-            }
-            this.level = LogLevel.ALL
-        }*/
-        install(HttpCookies)
-        install(ContentEncoding) {
-            // deflate(1.0F)
-            gzip(0.9F)
-        }
-        install(UserAgent) {
-            agent = "Mozilla/5.0 (compatible; GetFursuitBot/0.10; Ktor/Java; +https://getfursu.it/)"
-        }
-        install(HttpTimeout) {
-            requestTimeoutMillis = 30_000
-        }
-        install(HttpRequestRetry) {
-            retryOnServerErrors(maxRetries = 3)
-            constantDelay(millis = 6_000, randomizationMs = 2_000)
-        }
-    }
+    private val client: HttpClient = client ?: HttpClient(Java, getConfig())
 
     override fun fetch(url: Url, method: HttpMethod, addHeaders: Map<String, String>, payload: String?): Snapshot {
         var contents = ""
@@ -122,5 +102,40 @@ class FastHttpClient(
         }
 
         return correctedCode
+    }
+
+    companion object {
+        fun getConfig(
+            logging: Boolean = false,
+            retries: Boolean = false,
+        ): HttpClientConfig<out HttpClientEngineConfig>.() -> Unit {
+            return {
+                if (logging) {
+                    install(Logging) {
+                        this.sanitizeHeader {
+                            it.equals("content-security-policy", true) // SPAM
+                        }
+                        this.level = LogLevel.ALL
+                    }
+                }
+                install(HttpCookies)
+                install(ContentEncoding) {
+                    // deflate(1.0F)
+                    gzip(0.9F)
+                }
+                install(UserAgent) {
+                    agent = "Mozilla/5.0 (compatible; GetFursuitBot/0.10; Ktor/Java; +https://getfursu.it/)"
+                }
+                install(HttpTimeout) {
+                    requestTimeoutMillis = 30_000
+                }
+                if (retries) {
+                    install(HttpRequestRetry) {
+                        retryOnServerErrors(maxRetries = 1)
+                        constantDelay(millis = 6_000, randomizationMs = 2_000)
+                    }
+                }
+            }
+        }
     }
 }
