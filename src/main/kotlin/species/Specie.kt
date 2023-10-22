@@ -1,6 +1,6 @@
 package species
 
-data class Specie(
+class Specie(
     val name: String,
 ) {
     private val parents: MutableSet<Specie> = mutableSetOf()
@@ -17,29 +17,27 @@ data class Specie(
         return children.plus(children.map { it.getDescendants() }.flatten())
     }
 
-    fun addChild(child: Specie) {
-        if (child == this) {
-            throw SpecieRecursionException("Cannot add ${child.name} as a child of $name")
+    class Builder(val name: String) {
+        private val result = Specie(name)
+
+        private val parents: MutableSet<Builder> = mutableSetOf()
+        private val children: MutableSet<Builder> = mutableSetOf()
+
+        fun getResult() = result
+
+        fun addChild(child: Builder) {
+            if (child == this) {
+                throw SpecieException("Cannot add ${child.name} as a child of $name")
+            }
+
+            if (result.getAncestors().contains(child.result)) {
+                throw SpecieException("Recursion when adding child ${child.name} to $name")
+            }
+
+            children.add(child)
+            result.children.add(child.result)
+            child.parents.add(this)
+            child.result.parents.add(result)
         }
-
-        if (getAncestors().contains(child)) {
-            throw SpecieRecursionException("Recursion when adding child ${child.name} to $name")
-        }
-
-        children.add(child)
-        child.parents.add(this)
-    }
-
-    fun addParent(parent: Specie) {
-        if (parent == this) {
-            throw SpecieRecursionException("Cannot add ${parent.name} as a parent of $name")
-        }
-
-        if (getDescendants().contains(parent)) {
-            throw SpecieRecursionException("Recursion when adding parent ${parent.name} to $name")
-        }
-
-        parents.add(parent)
-        parent.children.add(this)
     }
 }
