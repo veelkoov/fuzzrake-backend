@@ -10,11 +10,23 @@ class Specie(
     fun getChildren() = children.toSet()
 
     fun getAncestors(): Set<Specie> {
-        return parents.plus(parents.map { it.getAncestors() }.flatten())
+        return parents.plus(parents.map(Specie::getAncestors).flatten())
     }
 
     fun getDescendants(): Set<Specie> {
-        return children.plus(children.map { it.getDescendants() }.flatten())
+        return children.plus(children.map(Specie::getDescendants).flatten())
+    }
+
+    fun getSelfAndDescendants(): Set<Specie> {
+        return getDescendants().plus(this)
+    }
+
+    fun getDepth(): Int {
+        return if (parents.isEmpty()) {
+            0
+        } else {
+            parents.maxOf(Specie::getDepth) + 1
+        }
     }
 
     class Builder(val name: String) {

@@ -9,6 +9,7 @@ class Species(
     }
 
     fun getNames() = byName.keys.toSet()
+    fun hasName(name: String) = byName.containsKey(name)
 
     fun getAsTree() = asTree.toList()
 

@@ -1,12 +1,10 @@
 package species
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.*
 
 class SpeciesTest {
     @Test
-    fun testGetNames() {
+    fun getNames() {
         val subject = getTestInstance()
 
         assertEquals(
@@ -16,7 +14,7 @@ class SpeciesTest {
     }
 
     @Test
-    fun testGetAsTree() {
+    fun getAsTree() {
         val subject = getTestInstance()
 
         assertEquals(
@@ -26,11 +24,19 @@ class SpeciesTest {
     }
 
     @Test
-    fun testGetByName() {
+    fun getByName() {
         val subject = getTestInstance()
 
         assertEquals("Leaf 1B", subject.getByName("Leaf 1B").name)
         assertFailsWith<SpecieException> { subject.getByName("Middle 2") }
+    }
+
+    @Test
+    fun hasName() {
+        val subject = getTestInstance()
+
+        assertTrue { subject.hasName("Leaf 1B") }
+        assertFalse { subject.hasName("Middle 2") }
     }
 
     private fun getTestInstance(): Species {

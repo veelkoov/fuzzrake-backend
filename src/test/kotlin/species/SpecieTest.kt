@@ -58,7 +58,7 @@ class SpecieTest {
     }
 
     @Test
-    fun `Test getChildren() and getDescendants() sets`() {
+    fun `Test getChildren(), getDescendants() and getSelfAndDescendants() sets`() {
         val top = Specie.Builder("Top")
         val middle1 = Specie.Builder("Middle 1")
         val middle2 = Specie.Builder("Middle 2")
@@ -87,6 +87,10 @@ class SpecieTest {
         assertEquals(
             setOf("Middle 1", "Middle 2", "Bottom 1A", "Bottom 1B", "Bottom 2A", "Bottom 2B"),
             specieNamesSet(top.getResult().getDescendants()),
+        )
+        assertEquals(
+            setOf("Top", "Middle 1", "Middle 2", "Bottom 1A", "Bottom 1B", "Bottom 2A", "Bottom 2B"),
+            specieNamesSet(top.getResult().getSelfAndDescendants()),
         )
     }
 
@@ -123,5 +127,31 @@ class SpecieTest {
         assertFailsWith<SpecieException> {
             specieC.addChild(specieB)
         }
+    }
+
+    @Test
+    fun `Test depth calculation`() {
+        // A
+        // |
+        // B
+        // |\
+        // C |
+        // |/
+        // D
+
+        val specieA = Specie.Builder("Test specie A")
+        val specieB = Specie.Builder("Test specie B")
+        val specieC = Specie.Builder("Test specie C")
+        val specieD = Specie.Builder("Test specie D")
+
+        specieA.addChild(specieB)
+        specieB.addChild(specieC)
+        specieB.addChild(specieD)
+        specieC.addChild(specieD)
+
+        assertEquals(0, specieA.getResult().getDepth())
+        assertEquals(1, specieB.getResult().getDepth())
+        assertEquals(2, specieC.getResult().getDepth())
+        assertEquals(3, specieD.getResult().getDepth())
     }
 }
