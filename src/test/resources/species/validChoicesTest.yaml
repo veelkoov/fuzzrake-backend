@@ -1,3 +1,4 @@
+---
 valid_choices:
   'Most species':
     'Mammals':
@@ -6,10 +7,10 @@ valid_choices:
       'Deer': {}
     'With antlers':
       'Deer':  # Add second parent
-        'Some deer specie': {}  # Add child to something already created
+        'i_Some deer specie': {}  # Add child to something already created
 
   'Other':
-    'Other 1': {}
-    'Other 2': {}
+    'i_Other 1': {}
+    'i_Other 2': {}
 
   'Third root': {}

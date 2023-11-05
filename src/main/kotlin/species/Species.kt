@@ -11,15 +11,17 @@ class Species(
     fun getNames() = byName.keys.toSet()
     fun hasName(name: String) = byName.containsKey(name)
 
+    fun getVisibleNames() = byName.filterValues { !it.getHidden() }.keys.toSet()
+
     fun getAsTree() = asTree.toList()
 
     class Builder {
         private val byName: MutableMap<String, Specie.Builder> = mutableMapOf()
         private val asTree: MutableList<Specie.Builder> = mutableListOf()
 
-        fun getByNameCreatingMissing(name: String): Specie.Builder {
+        fun getByNameCreatingMissing(name: String, hidden: Boolean = false): Specie.Builder {
             return byName.computeIfAbsent(name) {
-                Specie.Builder(name)
+                Specie.Builder(name, hidden)
             }
         }
 

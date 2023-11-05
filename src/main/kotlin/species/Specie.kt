@@ -2,6 +2,7 @@ package species
 
 class Specie(
     val name: String,
+    private var hidden: Boolean,
 ) {
     private val parents: MutableSet<Specie> = mutableSetOf()
     private val children: MutableSet<Specie> = mutableSetOf()
@@ -21,6 +22,8 @@ class Specie(
         return getDescendants().plus(this)
     }
 
+    fun getHidden() = hidden
+
     fun getDepth(): Int {
         return if (parents.isEmpty()) {
             0
@@ -29,11 +32,13 @@ class Specie(
         }
     }
 
-    class Builder(val name: String) {
-        private val result = Specie(name)
+    class Builder(val name: String, hidden: Boolean = false) {
+        private val result = Specie(name, hidden)
 
         private val parents: MutableSet<Builder> = mutableSetOf()
         private val children: MutableSet<Builder> = mutableSetOf()
+
+        fun getHidden() = result.hidden
 
         fun getResult() = result
 

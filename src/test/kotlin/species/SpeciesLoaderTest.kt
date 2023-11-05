@@ -34,4 +34,17 @@ class SpeciesLoaderTest {
             specieNamesSet(subject.getByName("Mammals").getDescendants()),
         )
     }
+
+    @Test
+    fun `Hidden species are hidden`() {
+        assertEquals(
+            setOf("Some deer specie", "Other 1", "Other 2"),
+            subject.getNames().minus(subject.getVisibleNames()),
+        )
+    }
+
+    @Test
+    fun `Built-in species loads`() {
+        SpeciesLoader().get()
+    }
 }

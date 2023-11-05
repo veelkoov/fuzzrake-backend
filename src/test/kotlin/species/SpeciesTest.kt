@@ -14,6 +14,16 @@ class SpeciesTest {
     }
 
     @Test
+    fun getVisibleNames() {
+        val subject = getTestInstance()
+
+        assertEquals(
+            setOf("Root 1", "Middle 1", "Leaf 1A", "Leaf 1B"),
+            subject.getVisibleNames(),
+        )
+    }
+
+    @Test
     fun getAsTree() {
         val subject = getTestInstance()
 
@@ -51,8 +61,8 @@ class SpeciesTest {
         middle1.addChild(leaf1a)
         middle1.addChild(leaf1b)
 
-        val root2 = species.getByNameCreatingMissing("Root 2")
-        val leaf2 = species.getByNameCreatingMissing("Leaf 2")
+        val root2 = species.getByNameCreatingMissing("Root 2", true)
+        val leaf2 = species.getByNameCreatingMissing("Leaf 2", true)
         root2.addChild(leaf2)
 
         species.addRootSpecie(root1)
