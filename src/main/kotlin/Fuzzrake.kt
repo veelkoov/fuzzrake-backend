@@ -7,6 +7,7 @@ import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.restrictTo
 import config.ConfigLoader
 import tasks.MiniaturesUpdate
+import tasks.SpeciesSync
 import tracking.Tracker
 import tracking.TrackerOptions
 import tasks.UrlsInspection
@@ -58,10 +59,23 @@ class MiniaturesUpdateCmd : CliktCommand(
     }
 }
 
+class SpeciesSyncCmd : CliktCommand(
+    name = "sync-species",
+    help = "Update species / creator species in the database",
+) {
+    override fun run() {
+        val config = ConfigLoader().locateAndLoad()
+        val syncTask = SpeciesSync(config)
+
+        syncTask.execute()
+    }
+}
+
 fun main(args: Array<String>) = FuzzrakeCmd()
     .subcommands(
         TrackerCmd(),
         UrlInspectionCmd(),
         MiniaturesUpdateCmd(),
+        SpeciesSyncCmd(),
     )
     .main(args)
