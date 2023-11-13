@@ -2,7 +2,10 @@ package species
 
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class CreatorSpeciesResolverTest {
     // A test case
@@ -11,6 +14,60 @@ class CreatorSpeciesResolverTest {
         val doesnt: Collection<String>,
         val expected: T,
     )
+
+    /**
+     * - Most species
+     *   - Hidden
+     * - Other
+     */
+    private fun getBasicSpecies(): Species {
+        val species = Species.Builder()
+        val mostSpecies = species.getByNameCreatingMissing("Most species")
+        val hidden = species.getByNameCreatingMissing("Hidden", true)
+        mostSpecies.addChild(hidden)
+        val other = species.getByNameCreatingMissing("Other")
+
+        species.addRootSpecie(mostSpecies)
+        species.addRootSpecie(other)
+
+        return species.getResult()
+    }
+
+    @Test
+    fun `Empty both does and doesnt returns empty set`() {
+        val subject = CreatorSpeciesResolver(getBasicSpecies())
+
+        val result = subject.resolveDoes(setOf(), setOf())
+        assertEquals(0, result.size)
+    }
+
+    @Test
+    fun `Empty does and unknown doesn't returns 'Most species' only`() {
+        val subject = CreatorSpeciesResolver(getBasicSpecies())
+
+        val result = subject.resolveDoes(setOf(), setOf("Some unusual specie"))
+        assertEquals(setOf("Most species"), result)
+    }
+
+    @Test
+    fun `Hidden species are not returned`() {
+        val subject = CreatorSpeciesResolver(getBasicSpecies())
+
+        val result = subject.resolveDoes(setOf("Most species"), setOf())
+
+        assertContains(result, "Most species")
+        assertFalse(result.contains("Hidden"))
+    }
+
+    @Test
+    fun `Other species are simplified`() {
+        val subject = CreatorSpeciesResolver(getBasicSpecies())
+
+        val result = subject.resolveDoes(setOf("Some weird specie"), setOf())
+
+        assertContains(result, "Other")
+        assertFalse(result.contains("Some weird specie"))
+    }
 
     /**
      * - Most species

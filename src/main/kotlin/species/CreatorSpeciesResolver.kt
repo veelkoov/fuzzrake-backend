@@ -19,7 +19,7 @@ class CreatorSpeciesResolver(
         val result = mutableSetOf<String>()
 
         ordered.forEach { (specie, does) ->
-            val descendants = getSelfAndDescendants(specie)
+            val descendants = getVisibleSelfAndDescendants(specie)
 
             if (does) {
                 descendants.forEach(result::add)
@@ -54,10 +54,10 @@ class CreatorSpeciesResolver(
         return result.toMap()
     }
 
-    private fun getSelfAndDescendants(self: Specie): Set<String>
+    private fun getVisibleSelfAndDescendants(self: Specie): Set<String>
     {
         return selfAndDescendantsCache.computeIfAbsent(self.name) {
-            self.getSelfAndDescendants().map { it.name }.toSet()
+            self.getSelfAndDescendants().map { it.name }.filter { species.getVisibleNames().contains(it) }.toSet()
         }
     }
 
