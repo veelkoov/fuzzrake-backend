@@ -57,4 +57,6 @@ class Specie(
             child.result.parents.add(result)
         }
     }
+
+    override fun toString() = name
 }

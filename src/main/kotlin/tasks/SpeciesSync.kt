@@ -38,9 +38,19 @@ class SpeciesSync(
     }
 
     private fun syncCreatorSpecies(creator: Creator, dbSpecies: MutableMap<String, Specie>) {
-        val namesDone = resolver.resolveDoes(creator.speciesDoes.unpack(), creator.speciesDoesnt.unpack())
+        val namesDone = if (creator.inactiveReason == "") {
+            resolver.resolveDoes(creator.speciesDoes.unpack(), creator.speciesDoesnt.unpack())
+        } else {
+            setOf()
+        }
 
-        namesDone.minus(creator.species.map { it.specie.name }.toSet()).forEach { specieName ->
+        val namesMatched = srcSpecies.getFlat().filter { srcSpecie ->
+            val srcSpecieAndDescendantNames = srcSpecie.getSelfAndDescendants().map { candidateSpecie -> candidateSpecie.name }
+
+            namesDone.any { nameDone -> srcSpecieAndDescendantNames.contains(nameDone) }
+        }.map { specieMatched -> specieMatched.name }
+
+        namesMatched.minus(creator.species.map { it.specie.name }.toSet()).forEach { specieName ->
             logger.info { "Adding '$specieName' to $creator..." }
 
             CreatorSpecie.new {
@@ -49,7 +59,7 @@ class SpeciesSync(
             }
         }
 
-        creator.species.associateBy { it.specie.name }.minus(namesDone).forEach { (specieName, specie) ->
+        creator.species.associateBy { it.specie.name }.minus(namesMatched).forEach { (specieName, specie) ->
             logger.info { "Removing '${specieName}' from $creator..." }
 
             specie.delete()

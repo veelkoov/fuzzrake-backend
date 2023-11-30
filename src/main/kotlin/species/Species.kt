@@ -14,6 +14,7 @@ class Species(
     fun getVisibleNames() = byName.filterValues { !it.getHidden() }.keys.toSet()
 
     fun getAsTree() = asTree.toList()
+    fun getFlat() = byName.values
 
     class Builder {
         private val byName: MutableMap<String, Specie.Builder> = mutableMapOf()

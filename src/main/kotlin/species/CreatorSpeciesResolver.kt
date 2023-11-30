@@ -36,12 +36,12 @@ class CreatorSpeciesResolver(
      */
     fun getOrderedDoesDoesnt(speciesDoes: Collection<String>, speciesDoesnt: Collection<String>): Map<Specie, Boolean>
     {
-        var result = listOf<Pair<Specie, Boolean>>()
-            .plus(speciesDoes.map { specieName -> getSpecieOrOtherForUnusual(specieName) to true })
-            .plus(speciesDoesnt.map { specieName -> getSpecieOrOtherForUnusual(specieName) to false })
+        val knownDoes = speciesDoes.map(::getVisibleSpecieOrParentOrOtherForUnusual).flatten().toSet()
+        val knownDoesnt = speciesDoesnt.map(::getVisibleSpecieOrParentOrOtherForUnusual).flatten().toSet().minus(other)
 
-        // Remove any "doesn't do" "Other"
-        result = result.filter { (specie, does) -> specie != other || does }
+        var result: List<Pair<Specie, Boolean>> = listOf<Pair<Specie, Boolean>>()
+            .plus(knownDoes.map { specie -> specie to true })
+            .plus(knownDoesnt.map { specie -> specie to false })
 
         result = result.sortedWith { item1: Pair<Specie, Boolean>, item2: Pair<Specie, Boolean> ->
             val depthDiff = item1.first.getDepth() - item2.first.getDepth()
@@ -61,12 +61,31 @@ class CreatorSpeciesResolver(
         }
     }
 
-    private fun getSpecieOrOtherForUnusual(specieName: String): Specie
+    private fun getVisibleSpecieOrParentOrOtherForUnusual(specieName: String): Set<Specie>
     {
-        return if (species.hasName(specieName)) {
-            species.getByName(specieName)
-        } else {
-            other
+        if (!species.hasName(specieName)) {
+            return setOf(other)
         }
+
+        val result = mutableSetOf<Specie>()
+        val unresolved = mutableSetOf(species.getByName(specieName))
+
+        while (unresolved.isNotEmpty()) {
+            val specie = unresolved.first()
+
+            if (specie.getHidden()) {
+                unresolved.addAll(specie.getParents())
+            } else {
+                result.add(specie)
+            }
+
+            unresolved.remove(specie)
+        }
+
+        if (result.size == 0) {
+            throw SpecieException("$specieName is hidden and does not have a single visible parent")
+        }
+
+        return result
     }
 }

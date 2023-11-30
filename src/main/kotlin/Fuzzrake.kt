@@ -6,12 +6,9 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.restrictTo
 import config.ConfigLoader
-import tasks.MiniaturesUpdate
-import tasks.SpeciesSync
+import tasks.*
 import tracking.Tracker
 import tracking.TrackerOptions
-import tasks.UrlsInspection
-import tasks.UrlsInspectionOptions
 
 class FuzzrakeCmd : CliktCommand(name="fuzzrake") {
     override fun run() = Unit
@@ -71,11 +68,24 @@ class SpeciesSyncCmd : CliktCommand(
     }
 }
 
+class UpdateFiltersCmd : CliktCommand(
+    name = "update-filters",
+    help = "Update filters data",
+) {
+    override fun run() {
+        val config = ConfigLoader().locateAndLoad()
+        val task = FiltersUpdate(config)
+
+        task.execute()
+    }
+}
+
 fun main(args: Array<String>) = FuzzrakeCmd()
     .subcommands(
         TrackerCmd(),
         UrlInspectionCmd(),
         MiniaturesUpdateCmd(),
         SpeciesSyncCmd(),
+        UpdateFiltersCmd(),
     )
     .main(args)
