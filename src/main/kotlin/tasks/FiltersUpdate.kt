@@ -2,17 +2,13 @@ package tasks
 
 import config.Configuration
 import database.Database
-import database.entities.CreatorSpecie
-import database.helpers.getActive
-import database.tables.CreatorSpecies
-import database.tables.Creators
+import database.repositories.CreatorSpeciesRepository
+import database.repositories.CreatorsRepository
 import filters.FilterData
 import filters.SpecialItem
 import filters.StandardItem
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.dao.with
-import org.jetbrains.exposed.sql.selectAll
 import species.Specie
 import species.SpeciesLoader
 
@@ -22,20 +18,22 @@ class FiltersUpdate(
 ) {
     fun execute() {
         database.transaction {
-            val stats: Map<String, Int> = getCreatorSpeciesStats()
-            val knownCount = CreatorSpecies.slice(CreatorSpecies.creator).selectAll().withDistinct().count()
-            val allCount = Creators.getActive().count()
+            val stats: Map<String, Int> = CreatorSpeciesRepository.getSpecieNamesToCount()
 
-            val filters = FilterData(getSpeciesTree(stats), listOf(
-                SpecialItem("Unknown", "?", (allCount - knownCount).toInt(), "unknown")
-            ))
+            val items = getSpeciesList(SpeciesLoader().get().getAsTree(), stats)
+            val specialItems = listOf(SpecialItem("Unknown", "?", countUnknown(), "unknown"))
+
+            val filters = FilterData(items, specialItems)
 
             println(Json.encodeToString(filters))
         }
     }
 
-    private fun getSpeciesTree(stats: Map<String, Int>): List<StandardItem> {
-        return getSpeciesList(SpeciesLoader().get().getAsTree(), stats)
+    private fun countUnknown(): Int {
+        val knownCount = CreatorSpeciesRepository.countCreatorsHavingSpeciesDefined()
+        val allCount = CreatorsRepository.countActive()
+
+        return (allCount - knownCount).toInt()
     }
 
     private fun getSpeciesList(species: Collection<Specie>, stats: Map<String, Int>): List<StandardItem> {
@@ -49,11 +47,5 @@ class FiltersUpdate(
             stats[specie.name] ?: 0,
             getSpeciesList(specie.getChildren(),stats),
         )
-    }
-
-    private fun getCreatorSpeciesStats(): Map<String, Int> {
-        return CreatorSpecie.all().with(CreatorSpecie::specie)
-            .groupBy { it.specie.name }
-            .mapValues { it.value.size }
     }
 }
