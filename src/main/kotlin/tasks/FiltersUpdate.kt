@@ -1,14 +1,14 @@
 package tasks
 
 import config.Configuration
+import data.KotlinDataManager
+import data.KotlinDataManager.SPECIES_FILTER
 import database.Database
 import database.repositories.CreatorSpeciesRepository
 import database.repositories.CreatorsRepository
 import filters.FilterData
 import filters.SpecialItem
 import filters.StandardItem
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import species.Specie
 import species.SpeciesLoader
 
@@ -23,9 +23,7 @@ class FiltersUpdate(
             val items = getSpeciesList(SpeciesLoader().get().getAsTree(), stats)
             val specialItems = listOf(SpecialItem("Unknown", "?", countUnknown(), "unknown"))
 
-            val filters = FilterData(items, specialItems)
-
-            println(Json.encodeToString(filters))
+            KotlinDataManager.set(SPECIES_FILTER, FilterData(items, specialItems))
         }
     }
 
