@@ -38,11 +38,7 @@ class SpeciesSync(
     }
 
     private fun syncCreatorSpecies(creator: Creator, dbSpecies: MutableMap<String, Specie>) {
-        val namesDone = if (creator.inactiveReason == "") {
-            resolver.resolveDoes(creator.speciesDoes.unpack(), creator.speciesDoesnt.unpack())
-        } else {
-            setOf()
-        }
+        val namesDone = resolver.resolveDoes(creator.speciesDoes.unpack(), creator.speciesDoesnt.unpack())
 
         val namesMatched = srcSpecies.getFlat().filter { srcSpecie ->
             val srcSpecieAndDescendantNames = srcSpecie.getSelfAndDescendants().map { candidateSpecie -> candidateSpecie.name }

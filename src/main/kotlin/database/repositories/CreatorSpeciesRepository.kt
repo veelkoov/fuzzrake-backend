@@ -2,12 +2,17 @@ package database.repositories
 
 import database.entities.CreatorSpecie
 import database.tables.CreatorSpecies
+import database.tables.Creators
 import org.jetbrains.exposed.dao.with
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.select
 
 object CreatorSpeciesRepository {
-    fun countCreatorsHavingSpeciesDefined() =
-        CreatorSpecies.slice(CreatorSpecies.creator).selectAll().withDistinct().count()
+    fun countActiveCreatorsHavingSpeciesDefined() =
+        (CreatorSpecies innerJoin Creators)
+            .slice(CreatorSpecies.creator)
+            .select { Creators.inactiveReason eq "" }
+            .withDistinct()
+            .count()
 
     fun getSpecieNamesToCount(): Map<String, Int> {
         return CreatorSpecie.all().with(CreatorSpecie::specie)

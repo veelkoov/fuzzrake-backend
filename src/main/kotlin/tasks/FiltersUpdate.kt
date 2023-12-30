@@ -28,7 +28,7 @@ class FiltersUpdate(
     }
 
     private fun countUnknown(): Int {
-        val knownCount = CreatorSpeciesRepository.countCreatorsHavingSpeciesDefined()
+        val knownCount = CreatorSpeciesRepository.countActiveCreatorsHavingSpeciesDefined()
         val allCount = CreatorsRepository.countActive()
 
         return (allCount - knownCount).toInt()
