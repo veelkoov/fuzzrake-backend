@@ -14,7 +14,7 @@ false_positives:
   - 'as (soon as WE_ARE|slots) open'
 
   # even though / although
-  - "even though you're closed for COMMISSIONS"
+  - 'even though you''re closed for COMMISSIONS'
   - 'although (fursuit )?COMMISSIONS are closed'
 
   # open in / next opening
@@ -25,16 +25,27 @@ false_positives:
   - '[^a-z]art(work)? COMMISSIONS'
 
 offers_statuses:
-  # Start with statuses "nicely" organized into paragraphs/sentences - single spaces, no newlines, etc.
-  - 'STATUS_ANY for OFFER'
+  # Short and to the point first
+  - 'STATUS_ANY \s+ for \s+ OFFER'
 
-  - 'OFFER(\s+are|\s+status)?(\s+now)?[\s:-]+(now\s+)?STATUS_ANY'
+  # OFFER - SEPARATOR? - STATUS
+  - >-
+    ( OFFER
+      | OPEN_TAG \s* OFFER \s* END_TAG )
+
+    ( \s+ are | \s+ status )?
+    (\s+now)?
+    ([\s:-]+ | \s* <hr[^>]*> \s* )
+    (now\s+)?
+
+    ( STATUS_ANY
+      | OPEN_TAG \s* (status: \s+)? STATUS_ANY \s* END_TAG )
 
   # Inverted order - careful!
-  - '(WE_ARE|now) STATUS_ANY(\s+for(\s+new)?|\s+new)?\s+OFFER(\s+and\s+OFFER)?'
-  -              'STATUS_ANY(\s+for(\s+new)?|\s+new)\s+OFFER(\s+and\s+OFFER)?'
+  - '(WE_ARE|now)\s+STATUS_ANY(\s+for(\s+new)?|\s+new)?\s+OFFER(\s+and\s+OFFER)?'
+  -                'STATUS_ANY(\s+for(\s+new)?|\s+new)\s+OFFER(\s+and\s+OFFER)?'
 
-  - 'OPEN_TAG\s*OFFER( status:?| ?:)?\s*END_OPEN_TAGS(\s*now)?\s*STATUS_ANY'
+  - 'OPEN_TAG\s*OFFER(\s+status:?|\s+?:)?\s*END_OPEN_TAGS(\s*now)?\s*STATUS_ANY'
 
   # Separators which should be handled safely
   - 'OPEN_TAG\s*OFFER\s+[|]\s+STATUS_ANY\s*END_TAG'
@@ -56,20 +67,20 @@ placeholders:
 
   'STATUS_OPEN=StatusOpen':
     - 'open(?!ing)'
-    - 'only making'
+    - 'only\s+making'
     - 'taking'
 
   'STATUS_CLOSED=StatusClosed':
     - 'closed?'
-    - 'not (taking( on)?|accepting|open)'
-    - "don't (do|take|provide|accept)"
+    - 'not\s+(taking(\s+on)?|accepting|open)'
+    - 'don''t\s+(do|take|provide|accept)'
 
   'OFFER':
     'HANDPAWS_AND_SOCKPAWS=HandpawsCmsAndSockpawsCms':
-      - 'handpaws AND sockpaws COMMISSIONS'
+      - 'handpaws AND sockpaws\s+COMMISSIONS'
 
     'PARTS_AND_REFURBISHMENTS=PartsAndRefurbishments':
-      - 'parts AND refurbishments COMMISSIONS'
+      - 'parts AND refurbishments\s+COMMISSIONS'
 
     'COMMISSIONS_AND_QUOTES=CommissionsAndQuotes':
       - '(COMMISSIONS AND quotes?)'
@@ -77,21 +88,21 @@ placeholders:
       - 'quote/com' # Hmmm... FIXME?
 
     'FULLSUIT_COMMISSIONS=FullsuitCommissions':
-      - 'fullsuit COMMISSIONS'
+      - 'fullsuit\s+COMMISSIONS'
 
     'PARTIAL_COMMISSIONS=PartialCommissions':
-      - 'partial COMMISSIONS'
+      - 'partial\s+COMMISSIONS'
 
     'HEAD_COMMISSIONS=HeadCommissions':
-      - 'head COMMISSIONS'
+      - 'head\s+COMMISSIONS'
 
     'PARTS=Parts':
-      - '(fursuit )?parts? COMMISSIONS'
+      - '(fursuit\s+)?parts?\s+COMMISSIONS'
 
     'COMPLEX_COMMISSIONS_WORDING=Commissions':
-      - '(custom )?(costume |fursuit )?COMMISSIONS'
-      - '(custom |COMMISSIONS )?slots?'
-      - 'fursuits?( queue)?'
+      - '(custom\s+)?(costume\s+|fursuit\s+)?COMMISSIONS'
+      - '(custom\s+|COMMISSIONS\s+)?slots?'
+      - 'fursuits?(\s+queue)?'
 
     'PROJECTS=Projects':
       - 'projects?'
@@ -103,29 +114,29 @@ placeholders:
       - 'refurbishments?'
 
     'PREMADES=Premades':
-      - 'pre-?mades?( designs?)?'
+      - 'pre-?mades?(\s+designs?)?'
 
     'ARTISTIC_LIBERTY=ArtisticLiberty':
-      - 'artistic liberty'
+      - 'artistic\s+liberty'
 
     'QUOTES=Quotes':
       - 'quotes?'
 
     'ORDERS=Orders':
-      - '(custom )?orders?'
+      - '(custom\s+)?orders?'
 
   ' AND ':
-    - ' and '
-    - ' ?(&|&amp;|[/+]) ?'
+    - '\s+and\s+'
+    - '\s?(&|&amp;|[/+])\s?'
 
   'COMMISSIONS':
     - 'comm?iss?ions?'
     - 'comms'
 
   'WE_ARE':
-    - "we( are|'re| will)?"
-    - "i( am|'m| will)?"
-    - "CREATOR_NAME (is|are)"
+    - 'we(''re|\s+are|\s+will)?'
+    - 'i(''m|\s+am|\s+will)?'
+    - 'CREATOR_NAME\s+(is|are)'
 
   'OUR':
     - 'my'
