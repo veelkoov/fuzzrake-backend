@@ -37,7 +37,7 @@ class CreatorSpeciesResolver(
     fun getOrderedDoesDoesnt(speciesDoes: Collection<String>, speciesDoesnt: Collection<String>): Map<Specie, Boolean>
     {
         val knownDoes = speciesDoes.map(::getVisibleSpecieOrParentOrOtherForUnusual).flatten().toSet()
-        val knownDoesnt = speciesDoesnt.map(::getVisibleSpecieOrParentOrOtherForUnusual).flatten().toSet().minus(other)
+        val knownDoesnt = speciesDoesnt.map(::getVisibleSpecieOrEmptySetForUnusual).flatten().toSet()
 
         var result: List<Pair<Specie, Boolean>> = listOf<Pair<Specie, Boolean>>()
             .plus(knownDoes.map { specie -> specie to true })
@@ -87,5 +87,14 @@ class CreatorSpeciesResolver(
         }
 
         return result
+    }
+
+    private fun getVisibleSpecieOrEmptySetForUnusual(specieName: String): Set<Specie>
+    {
+        if (!species.hasName(specieName) || species.getByName(specieName).getHidden()) {
+            return setOf()
+        }
+
+        return setOf(species.getByName(specieName))
     }
 }

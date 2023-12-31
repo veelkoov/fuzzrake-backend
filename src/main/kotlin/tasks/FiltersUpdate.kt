@@ -18,7 +18,7 @@ class FiltersUpdate(
 ) {
     fun execute() {
         database.transaction {
-            val stats: Map<String, Int> = CreatorSpeciesRepository.getSpecieNamesToCount()
+            val stats: Map<String, Int> = CreatorSpeciesRepository.getActiveCreatorsSpecieNamesToCount()
 
             val items = getSpeciesList(SpeciesLoader().get().getAsTree(), stats)
             val specialItems = listOf(SpecialItem("Unknown", "?", countUnknown(), "unknown"))
@@ -43,7 +43,7 @@ class FiltersUpdate(
             specie.name,
             specie.name,
             stats[specie.name] ?: 0,
-            getSpeciesList(specie.getChildren(),stats),
+            getSpeciesList(specie.getChildren(), stats),
         )
     }
 }
