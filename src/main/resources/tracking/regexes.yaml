@@ -1,28 +1,36 @@
 ---
 false_positives:
-  - 'when will you start taking new COMMISSIONS'
-  - 'when WE_ARE (open for|taking|take)'
-  - 'when do you open for'
-  - 'when (we|i) open commissions'
-  - '(if|when|while)( OUR)? OFFER( are)? STATUS_ANY'
+  - >-
+    when\ (
+      will\ you\ start\ taking\ new\ COMMISSIONS |
+      WE_ARE\ (open\ for|taking|take)            |
+      do\ you\ open\ for                         |
+      (we|i)\ open\ commissions                  )
 
-  - 'WE_ARE (now )?opening for quotes a few weeks before commission slots open'
-  - '(when|if) (my |our |the )(COMMISSIONS|QUOTES) (are )?open'
-  - 'after the commissions close'
+  - '(if|when|while)(\ OUR)?\ OFFER(\ are)?\ STATUS_ANY'
+
+  - 'WE_ARE\ (now\ )?opening\ for\ quotes\ a\ few\ weeks\ before\ commission\ slots\ open'
+  - '(when|if)\ (my\ |our\ |the\ )(COMMISSIONS|QUOTES)\ (are\ )?open'
+  - 'after\ the\ commissions\ close'
 
   # as soon / as ... open
-  - 'as (soon as WE_ARE|slots) open'
+  - 'as\ (soon\ as\ WE_ARE|slots)\ open'
 
   # even though / although
-  - 'even though you''re closed for COMMISSIONS'
-  - 'although (fursuit )?COMMISSIONS are closed'
+  - 'even\ though\ you''re\ closed\ for\ COMMISSIONS'
+  - 'although\ (fursuit\ )?COMMISSIONS\ are\ closed'
 
   # open in / next opening
-  - 'OFFER:? (are )?opens? (in |(in )?TIME_DESC)'
-  - 'next COMMISSIONS opening'
+  - >-
+    SIMPLE_OFFER:?
+    (\ are)?
+    \ open(s|ing)?\ (
+      in\                          |
+      (in\ |from\ )? ANY_TIME_DESC )
+  - 'next\ COMMISSIONS\ opening'
 
   # "art commissions"
-  - '[^a-z]art(work)? COMMISSIONS'
+  - '[^a-z]art(work)?\ COMMISSIONS'
 
 offers_statuses:
   # Short and to the point first
@@ -74,6 +82,10 @@ placeholders:
     - 'closed?'
     - 'not\s+(taking(\s+on)?|accepting|open)'
     - 'don''t\s+(do|take|provide|accept)'
+
+  'SIMPLE_OFFER':
+    - 'COMMISSIONS (\ slots)? ( AND QUOTES)?'
+    - 'QUOTES ( AND COMMISSIONS)?'
 
   'OFFER':
     'HANDPAWS_AND_SOCKPAWS=HandpawsCmsAndSockpawsCms':
@@ -143,7 +155,13 @@ placeholders:
     - 'mine'
     - 'ours?'
 
-  'TIME_DESC':
+  'ANY_TIME_DESC':
+    - >-
+      (\d{1,2} (st|rd|th)? (\s+ of)? \s+)?
+      MONTHS
+    - 'spring|summer|autumn|winter|late|early'
+
+  'MONTHS':
     - 'jan(uary)?'
     - 'feb(ruary)?'
     - 'mar(ch)?'
@@ -156,7 +174,6 @@ placeholders:
     - 'oct(ober)?'
     - 'nov(ember)?'
     - 'dec(ember)?'
-    - 'spring|summer|autumn|winter|late|early'
 
 cleaners: # Used to remove noise / simplify information
   '(?<=function|try|if|catch|else[;,{})]) (?=function|catch|else[{}\$(])': '_'
