@@ -79,7 +79,7 @@ placeholders:
     - 'taking'
 
   'STATUS_CLOSED=StatusClosed':
-    - 'closed?'
+    - 'closed?(?![a-z])'
     - 'not\s+(taking(\s+on)?|accepting|open)'
     - 'don''t\s+(do|take|provide|accept)'
 
@@ -175,33 +175,31 @@ placeholders:
     - 'nov(ember)?'
     - 'dec(ember)?'
 
-cleaners: # Used to remove noise / simplify information
-  '(?<=function|try|if|catch|else[;,{})]) (?=function|catch|else[{}\$(])': '_'
-  '(?<=return|delete) (?=this)':                                           '_'
-  '<script[^>]*>[^ ]+</script>':                                           ' '
-  '<meta (?:itemprop|property)="(?:og:|twitter:)?description"[^>]+>':      ' ' # Seems to duplicate primary content
+cleaners:  # Used to remove noise / simplify information
 
-  '&nbsp;':                                          ' '
-  "\u00A0":                                          ' ' # NBSP
-  '❗':                                              '!' # Emoji exclamation mark
-  '<br */?>':                                        "\n"
   '<style[^>]*>.*?</style>':                         ' '
+
+  # Seems to duplicate primary content on some serial websites.
+  # Doesn't affect Twitter (yet...). grep-code-og-description-removal
+  '<meta (?:itemprop|property)="(?:og:|twitter:)?description"[^>]+>':      ' '
+
+  # First is the NBSP
+  "\u00A0|&nbsp;|\t":                                ' '
+  '❗':                                              '!' # Emoji exclamation mark
+  '<br[^>]*>':                                       "\n"
   '<!--.*?-->':                                      ' '
-  '</?(?:strong|b|i|span|center|u|a|em|font)[^>]*>': ''
-  '(\*\*\*|!)(open|closed)(\*\*\*|!)':               '$2'
-  '&gt;&gt; ?(open|closed) ?&lt;&lt;':               '$1'
-  '(<[^>]+ )style="[^"]*"([^>]*>)':                  '$1$2'
+  '</?(?:strong|b|i|span|center|u|a|em|font)( [^>]*)?>': ''
 
   '&#(?:39|8217);': "'"
 
-  '\t':     ' '
   ' {2,}':  ' '
   '\n{2,}': "\n"
 
   # square.site
   # {"content":{"quill":{"ops":[{"insert":"Fursuit commissions are currently OPEN\n"}]}}}
-  ',"attributes":\{[^}]*\}': ''
-  '"\},\{"insert":"':        ''
+  # This is obviously naive and will fail if anyone uses { or } in actual site text.
+  ',"attributes":\{[^{}]*(\{[^{}]*(\{[^{}]*(\{[^{}]*\})?[^{}]*\})?[^{}]*\})?[^{}]*\}': ''
+  '"\},\{"insert":"': ''
 
   # always / currently / now
   '(?<![a-z])(currently|basically always|always|permanently)(?![a-z])': 'now'
@@ -209,6 +207,10 @@ cleaners: # Used to remove noise / simplify information
   # Change order to reduce number of alterations
   '(?<![a-z])we are now(?![a-z])': 'now we are'
   '(?<![a-z])not now(?![a-z])':    'now not'
+
+  # Remove decorations
+  '(\*\*\*|!)(open|closed)(\*\*\*|!)':               '$2'
+  '&gt;&gt; ?(open|closed) ?&lt;&lt;':               '$1'
 
   # [ Commissions . . . Open ]
   '\[ ([a-z]+) ?\.(?: ?\.)+ ?([a-z]+) \]': '$1: $2'

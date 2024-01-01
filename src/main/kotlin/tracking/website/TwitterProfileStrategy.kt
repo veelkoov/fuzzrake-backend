@@ -24,7 +24,7 @@ object TwitterProfileStrategy : Strategy {
     }
 
     private fun tryFromMeta(document: Document): String? {
-        val ogDescriptionNodes = document.head().selectXpath("//meta[@property='og:description']")
+        val ogDescriptionNodes = document.head().selectXpath("//meta[@property='og:description']") // grep-code-og-description-removal
         val ogTitleNodes = document.head().selectXpath("//meta[@property='og:title']")
 
         val ogTitle: String? = ogTitleNodes.attr("content")
