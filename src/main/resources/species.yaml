@@ -9,24 +9,24 @@ valid_choices:
 
       Mammals:
         Bears:
-          Giant pandas:
+          i_Giant pandas: {}
         Canines:
-          Lupines:
-            Wolves:
-          Vulpines:
-            Foxes:
+          Wolves:
+            i_Lupines: {}  # Under "wolves" because we don't have anyone creating lupines BUT wolves
+          Foxes:
+            i_Vulpines: {}  # Under "foxes" because we don't have anyone creating vulpines BUT foxes
           Dogs:
-            'Domestic dogs':
-              'Border collies': {}
-              'Welsh corgis': {}
+            'i_Domestic dogs':
+              'i_Border collies': {}
+              'i_Welsh corgis': {}
           Coyotes: {}
-          Jackals: {}
+          i_Jackals: {}
         Felines:
           "Big cats":
-            Caracals:
+            i_Caracals: {}
             Lions:
-            Lynxes:
-            Tigers:
+            i_Lynxes: {}
+            i_Tigers: {}
           "Small cats":
             "Domestic cats":
         Marsupials:
@@ -40,18 +40,18 @@ valid_choices:
           Apes:
           Monkeys:
         Rodents:
-          Mice:
+          i_Mice: {}
           Rats:
         Ungulates:
           "i_Ungulates (tests now)":
           Bovines:
-            Antelopes: {}
-            Cows:
+            i_Antelopes: {}
+            i_Cows: {}
           Cervines:
             Deers:
-              Caribous: {}
+              i_Caribous: {}
           Equines:  # Avoid?
-            Donkeys: {}
+            i_Donkeys: {}
             Horses:
           Goats:
           Rhinos:
@@ -59,11 +59,11 @@ valid_choices:
         Bats:
         Elephants:
         Hyenas:
-        Pinnipeds:
+        i_Pinnipeds: {}
         Rabbits:
         Raccoons:
         Red pandas:
-        Sloths:
+        i_Sloths: {}
 
       Reptiles:
         Dinosaurs:  # Introduce "Extinct" group?
@@ -148,7 +148,6 @@ valid_choices:
 
     Scalies:  # Fill
       Dragons: {}
-      'i_Most scalies': {}
       Reptiles: {}
       'i_Some scalies': {}
 
@@ -213,7 +212,6 @@ valid_choices:
       'i_Most furless/featherless species':
 
       "i_Furbies":
-      "i_Gem raptors":
       "i_Humanoids":
         "i_Humans":
       "i_I make exceptions on rare occasions":
